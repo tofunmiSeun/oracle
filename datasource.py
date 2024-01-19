@@ -12,7 +12,6 @@ class Datasource(TypedDict):
     _id: NotRequired[ObjectId]
     workspace_id: str
     website: str
-    content_downloaded: bool
 
 
 class DatasourceService:
