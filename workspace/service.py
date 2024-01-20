@@ -3,7 +3,7 @@ from typing import List
 from pymongo.database import Database
 from pymongo.collection import Collection
 from bson import ObjectId
-from models import Workspace, WorkspaceViewModel
+from .models import Workspace, WorkspaceViewModel
 
 
 class WorkspaceService:
