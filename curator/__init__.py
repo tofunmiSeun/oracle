@@ -1,7 +1,7 @@
 import asyncio
 
 
-async def download(website: str):
+async def run(website: str):
     print("website: {}".format(website))
     # ..........
     # Pseudo code

@@ -3,7 +3,7 @@ from pymongo.database import Database
 from pymongo.collection import Collection
 from bson import ObjectId
 import asyncio
-import download_embeddings
+import curator
 
 loop = asyncio.get_event_loop()
 
@@ -23,6 +23,6 @@ class DatasourceService:
                                 data_analysed=False)
         result = self.collection.insert_one(datasource)
 
-        loop.create_task(download_embeddings.download(website=website))
+        loop.create_task(curator.run(website=website))
 
         return str(result.inserted_id)
