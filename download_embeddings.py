@@ -3,10 +3,18 @@ import asyncio
 
 async def download(website: str):
     print("website: {}".format(website))
-    # Download data from website
-    # Split into chunks
-    # Get chunk embeddings
-    # Save embeddings
-    # Register content as saved
+    # ..........
+    # Pseudo code
+    # 1. Check if Data for website has already been saved
+    # 2. Download data from website
+    # 3. Split into chunks
+    # 4. Get chunk embeddings
+    # 5. Save embeddings
+    # 6. Register content as saved
+    # ..........
+    # Questions
+    # 1. Can/Should I be recursive about crawling the URL?
+    # 2. Is a different kind of text splitter better?
+    # 3. are there alternative embeddings to use?
     await asyncio.sleep(2)
     print("done!")
