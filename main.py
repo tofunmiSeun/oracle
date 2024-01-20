@@ -2,7 +2,8 @@ from fastapi import FastAPI
 from typing import List
 from mongoclient import database
 from api_request_models import CreateWorkspaceRequest, CreateDatasourceRequest
-from workspace import WorkspaceService, WorkspaceViewModel
+from workspace.models import WorkspaceViewModel
+from workspace.service import WorkspaceService
 from datasource import DatasourceService
 
 app = FastAPI()
