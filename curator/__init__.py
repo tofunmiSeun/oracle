@@ -1,8 +1,10 @@
 import asyncio
+from . import dataloader
 
 
 async def run(website: str):
     print("website: {}".format(website))
+    _ = dataloader.load_document_in_chunks(website)
     # ..........
     # Pseudo code
     # 1. Check if Data for website has already been saved
