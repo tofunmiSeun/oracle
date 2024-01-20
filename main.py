@@ -1,14 +1,14 @@
 from fastapi import FastAPI
 from typing import List
-from mongoclient import database
+from database import mongo_database
 from api.models import CreateWorkspaceRequest, CreateDatasourceRequest
 from workspace.models import WorkspaceViewModel
 from workspace.service import WorkspaceService
 from datasource import DatasourceService
 
 app = FastAPI()
-workspace_service = WorkspaceService(database=database)
-datasource_service = DatasourceService(database=database)
+workspace_service = WorkspaceService(database=mongo_database)
+datasource_service = DatasourceService(database=mongo_database)
 
 
 @app.post("/workspace")

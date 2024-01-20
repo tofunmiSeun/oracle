@@ -7,7 +7,7 @@ load_dotenv()
 uri = os.getenv('MONGODB_URI')
 # Todo: fix TLS certificate validation
 mongo_client = MongoClient(uri, tlsAllowInvalidCertificates=True)
-database = mongo_client.oracle
+mongo_database = mongo_client.oracle
 
 try:
     mongo_client.admin.command('ping')
