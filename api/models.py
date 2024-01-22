@@ -1,11 +1,11 @@
 from pydantic import BaseModel
 
 
-class CreateWorkspaceRequest(BaseModel):
+class CreateNamespaceRequest(BaseModel):
     title: str
     description: str
 
 
 class CreateDatasourceRequest(BaseModel):
-    workspace_id: str
+    namespace_id: str
     website: str
