@@ -15,8 +15,8 @@ class NamespaceService:
         result = self.collection.insert_one(namespace)
         return str(result.inserted_id)
 
-    def get_all_workspaces(self) -> List[Namespace]:
-        result: List[Workspace] = []
+    def get_all_namespaces(self) -> List[Namespace]:
+        result: List[Namespace] = []
 
         cursor = self.collection.find({})
         for item in cursor:
