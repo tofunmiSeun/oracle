@@ -1,5 +1,5 @@
 ### Launching app
-1. install required packages using `pip install -r requirements.txt`
+1. Install required packages using `pip install -r requirements.txt`
 2. Run `uvicorn main:app --reload --port=3000`
 
 ### Installing new packages
