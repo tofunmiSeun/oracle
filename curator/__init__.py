@@ -5,11 +5,7 @@ from embeddings import EmbeddingsService
 embeddings_service = EmbeddingsService(database=mongo_database)
 
 
-def get_unique_document_id(website_url: str) -> str:
-    return f'website_{website_url.strip().lower()}'
-
-
-async def run(website: str):
+async def run(website: str, doc_id: str):
     # ..........
     # Pseudo code
     # 1. Check if Data for website has already been saved
@@ -19,8 +15,6 @@ async def run(website: str):
     # 5. Save embeddings
     # 6. Register content as saved
     # ..........
-
-    doc_id = get_unique_document_id(website)
 
     print(f"website: {website}, document_id: {doc_id}")
     print("loading documents from datasource")
