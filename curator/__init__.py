@@ -1,10 +1,16 @@
-import asyncio
 from . import dataloader
+from .embeddings import get_embeddings
+from database import mongo_database
+from embeddings import EmbeddingsService
+
+embeddings_service = EmbeddingsService(database=mongo_database)
+
+
+def get_unique_document_id(website_url: str) -> str:
+    return f'website_{website_url.strip().lower()}'
 
 
 async def run(website: str):
-    print("website: {}".format(website))
-    _ = dataloader.load_document_in_chunks(website)
     # ..........
     # Pseudo code
     # 1. Check if Data for website has already been saved
@@ -14,9 +20,19 @@ async def run(website: str):
     # 5. Save embeddings
     # 6. Register content as saved
     # ..........
-    # Questions
-    # 1. Can/Should I be recursive about crawling the URL?
-    # 2. Is a different kind of text splitter better?
-    # 3. are there alternative embeddings to use?
-    await asyncio.sleep(2)
+
+    doc_id = get_unique_document_id(website)
+
+    print(f"website: {website}, document_id: {doc_id}")
+    print("loading documents from datasource")
+    chunks = dataloader.load_document_in_chunks(website)
+    print(f'{len(chunks)} chunks of data')
+
+    print("creating and saving embeddings")
+    # Can we parallelize this?
+    for doc in chunks:
+        emb = get_embeddings(doc.page_content)
+        embeddings_service.insert_embedding(document_id=doc_id,
+                                            content=doc.page_content,
+                                            embeddings=emb)
     print("done!")
