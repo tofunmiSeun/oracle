@@ -4,7 +4,7 @@ from database import mongo_database
 from api.models import CreateNamespaceRequest, CreateDatasourceRequest
 from namespace.models import NamespaceViewModel
 from namespace.service import NamespaceService
-from datasource import DatasourceService
+from datasource.service import DatasourceService
 
 app = FastAPI()
 namespace_service = NamespaceService(database=mongo_database)

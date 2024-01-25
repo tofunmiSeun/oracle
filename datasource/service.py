@@ -1,17 +1,11 @@
-from typing import TypedDict, NotRequired
 from pymongo.database import Database
 from pymongo.collection import Collection
-from bson import ObjectId
 import asyncio
 import curator
+from models import Datasource
+
 
 loop = asyncio.get_event_loop()
-
-
-class Datasource(TypedDict):
-    _id: NotRequired[ObjectId]
-    namespace_id: str
-    website: str
 
 
 class DatasourceService:
