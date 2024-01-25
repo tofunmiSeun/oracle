@@ -2,7 +2,7 @@ from pymongo.database import Database
 from pymongo.collection import Collection
 import asyncio
 import curator
-from models import Datasource
+from .models import Datasource
 
 
 loop = asyncio.get_event_loop()
