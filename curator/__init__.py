@@ -25,7 +25,7 @@ async def run(website: str, doc_id: str):
     # Can we parallelize this?
     for doc in chunks:
         emb = get_embeddings(doc.page_content)
-        db_service.insert_embedding(document_id=doc_id,
-                                    content=doc.page_content,
-                                    embeddings=emb)
+        db_service.insert_embeddings(document_id=doc_id,
+                                     content=doc.page_content,
+                                     embeddings=emb)
     print("done!")

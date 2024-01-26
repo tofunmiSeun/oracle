@@ -64,8 +64,8 @@ class DatabaseService:
     def get_datasource(self, id) -> Datasource:
         return self.datasource_collection.find_one({"_id": ObjectId(id)})
 
-    def insert_embedding(self, document_id: str, content: str,
-                         embeddings: List[float]) -> None:
+    def insert_embeddings(self, document_id: str, content: str,
+                          embeddings: List[float]) -> None:
         document_embeddings = DocumentEmbeddings(document_id=document_id,
                                                  content=content,
                                                  embeddings=embeddings)
