@@ -49,4 +49,5 @@ def ask_question(namespace_id: str, query: str = '') -> str:
     doc_ids = db_service.get_document_ids_for_namespace(namespace_id)
     embeddings = embed_query(query)
     retrieved_documents = db_service.search_embeddings(embeddings, doc_ids)
+
     return ask_llm(query, retrieved_documents)
