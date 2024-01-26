@@ -3,7 +3,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 from typing import List
 from database.service import DatabaseService
-from embeddings import get_embeddings
+from embeddings import generate_embeddings
 
 db_service = DatabaseService()
 # Is a different kind of text splitter better?
@@ -40,7 +40,7 @@ async def process_website(website: str, doc_id: str):
     print("creating and saving embeddings")
     # Can we parallelize this?
     for doc in chunks:
-        emb = get_embeddings(doc.page_content)
+        emb = generate_embeddings(doc.page_content)
         db_service.insert_embeddings(document_id=doc_id,
                                      content=doc.page_content,
                                      embeddings=emb)

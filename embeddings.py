@@ -14,7 +14,7 @@ print(f'''Time taken to initialize {model_name}=
       {model_init_stop - model_init_start} seconds''')
 
 
-def get_embeddings(text: str) -> List[float]:
+def generate_embeddings(text: str) -> List[float]:
     embeddings = model.encode(text)
     converted_to_floats = [tensor.item() for tensor in embeddings]
     return converted_to_floats
