@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel
 
 
@@ -21,3 +22,8 @@ class DatasourceViewModel(BaseModel):
     id: str
     namespace_id: str
     website: str
+
+
+class UpdateNamespaceRequest(BaseModel):
+    title: Optional[str]
+    description: Optional[str]

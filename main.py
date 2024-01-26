@@ -26,6 +26,11 @@ def get_all_namespaces() -> List[api.models.NamespaceViewModel]:
             for item in namespaces]
 
 
+@app.post("/namespace/{id}")
+def update_namespace(id: str, body: api.models.UpdateNamespaceRequest) -> None:
+    db_service.update_namespace(id, body.title, body.description)
+
+
 @app.delete("/namespace/{namespace_id}")
 def delete_namespace(namespace_id: str) -> None:
     db_service.delete_namespace(id=namespace_id)

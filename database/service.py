@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from pymongo.collection import Collection
 from bson import ObjectId
 from .models import Namespace, Datasource, DocumentEmbeddings
@@ -32,6 +32,24 @@ class DatabaseService:
             result.append(item)
 
         return result
+
+    def update_namespace(self, id: str, title: Optional[str] = None,
+                         description: Optional[str] = None) -> None:
+        if title is None and description is None:
+            return
+
+        namespace = self.namespace_collection.find_one({"_id": ObjectId(id)})
+        if namespace is None:
+            return
+
+        update_params: dict[str, str] = {}
+        if title is not None:
+            update_params['title'] = title
+        if description is not None:
+            update_params['description'] = description
+
+        self.namespace_collection.update_one({"_id": namespace["_id"]},
+                                             {"$set": update_params})
 
     def delete_namespace(self, id: str) -> bool:
         result = self.namespace_collection.delete_one({"_id": ObjectId(id)})
