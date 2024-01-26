@@ -45,10 +45,3 @@ async def process_website(website: str, doc_id: str):
                                      content=doc.page_content,
                                      embeddings=emb)
     print("done!")
-
-if __name__ == "__main__":
-    url = 'https://www.cntraveller.com/gallery/best-things-to-do-in-paris'
-    print('url={}'.format(url))
-    chunks = load_document_in_chunks(url=url)
-    for chunk in chunks:
-        print(chunk.page_content, "\n\n")
