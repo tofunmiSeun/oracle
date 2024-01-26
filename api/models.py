@@ -15,3 +15,9 @@ class NamespaceViewModel(BaseModel):
     id: str
     title: str
     description: str
+
+
+class DatasourceViewModel(BaseModel):
+    id: str
+    namespace_id: str
+    website: str

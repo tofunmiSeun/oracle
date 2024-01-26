@@ -46,6 +46,20 @@ def create_datasource(body: api.models.CreateDatasourceRequest) -> str:
     return datasource_id
 
 
+@app.get("/datasource/{namespace_id}")
+def get_datasources(namespace_id: str) -> List[api.models.DatasourceViewModel]:
+    namespaces = db_service.get_datasources(namespace_id)
+    return [api.models.DatasourceViewModel(id=str(item['_id']),
+                                           namespace_id=item['namespace_id'],
+                                           website=item['website'])
+            for item in namespaces]
+
+
+@app.delete("/datasource/{datasource_id}")
+def delete_datasource(datasource_id: str) -> None:
+    db_service.delete_datasource(id=datasource_id)
+
+
 @app.get("/ask/{namespace_id}")
 def ask_question(namespace_id: str, query: str = '') -> str:
     doc_ids = db_service.get_document_ids_for_namespace(namespace_id)

@@ -35,9 +35,7 @@ class DatabaseService:
 
     def delete_namespace(self, id: str) -> bool:
         result = self.namespace_collection.delete_one({"_id": ObjectId(id)})
-        deleted = result.deleted_count > 0
-        print('Deleted: {}'.format(deleted))
-        return deleted
+        return result.deleted_count > 0
 
     def create_datasource(self, namespace_id: str, website: str) -> str:
         doc_id = get_unique_document_id(website)
@@ -46,6 +44,20 @@ class DatabaseService:
                                 data_analysed=False)
         result = self.datasource_collection.insert_one(datasource)
         return str(result.inserted_id)
+
+    def get_datasources(self, namespace_id: str) -> List[Datasource]:
+        result: List[Datasource] = []
+
+        cursor = self.datasource_collection.find(
+            {"namespace_id": namespace_id})
+        for item in cursor:
+            result.append(item)
+
+        return result
+
+    def delete_datasource(self, id: str) -> bool:
+        result = self.datasource_collection.delete_one({"_id": ObjectId(id)})
+        return result.deleted_count > 0
 
     def get_datasource(self, id) -> Datasource:
         return self.datasource_collection.find_one({"_id": ObjectId(id)})
