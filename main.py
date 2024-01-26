@@ -2,14 +2,13 @@ from fastapi import FastAPI
 from typing import List
 import api.models
 from database.service import DatabaseService
-import asyncio
+import threading
 import datasource_processer
 from embeddings import embed_query
 from llm import ask_llm
 
 app = FastAPI()
 db_service = DatabaseService()
-loop = asyncio.get_event_loop()
 
 
 @app.post("/namespace")
@@ -38,8 +37,11 @@ def create_datasource(body: api.models.CreateDatasourceRequest) -> str:
                                                  body.website)
 
     datasource = db_service.get_datasource(datasource_id)
-    loop.create_task(datasource_processer.process_website(
-        datasource['website'], datasource['document_id']))
+
+    thread = threading.Thread(target=datasource_processer.process_website,
+                              args=(datasource['website'],
+                                    datasource['document_id'],))
+    thread.start()
 
     return datasource_id
 

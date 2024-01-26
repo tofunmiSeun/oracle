@@ -21,7 +21,7 @@ def load_document_in_chunks(url: str) -> List[Document]:
     return chunks
 
 
-async def process_website(website: str, doc_id: str):
+def process_website(website: str, doc_id: str):
     # ..........
     # Pseudo code
     # 1. Check if Data for website has already been saved
