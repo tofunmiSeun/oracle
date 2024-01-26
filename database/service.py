@@ -64,9 +64,45 @@ class DatabaseService:
     def get_datasource(self, id) -> Datasource:
         return self.datasource_collection.find_one({"_id": ObjectId(id)})
 
+    def get_document_ids_for_namespace(self, namespace_id: str) -> List[str]:
+        cursor = self.datasource_collection.find(
+            {"namespace_id": namespace_id},
+            {"document_id": 1})
+
+        doc_ids: List[str] = []
+        for item in cursor:
+            doc_ids.append(item['document_id'])
+
+        return doc_ids
+
     def insert_embeddings(self, document_id: str, content: str,
                           embeddings: List[float]) -> None:
         document_embeddings = DocumentEmbeddings(document_id=document_id,
                                                  content=content,
                                                  embeddings=embeddings)
         self.embeddings_collection.insert_one(document_embeddings)
+
+    def search_embeddings(self, embeddings: List[float],
+                          document_ids: List[str]) -> List[str]:
+
+        cursor = self.embeddings_collection.aggregate([
+            {
+                "$vectorSearch": {
+                    "queryVector": embeddings,
+                    "path": "embeddings",
+                    "numCandidates": 100,
+                    "limit": 3,
+                    "index": "embeddings_vector_idx",
+                    "filter": {"document_id": {"$in": document_ids}}
+                }
+            },
+            {
+                "$project": {"_id": 0, "content": 1}
+            }
+        ])
+
+        results: List[str] = []
+        for item in cursor:
+            results.append(item['content'])
+
+        return results
