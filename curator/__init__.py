@@ -1,8 +1,8 @@
 from . import dataloader
-from database import mongo_database
-from embeddings import EmbeddingsService
+from database.service import DatabaseService
+from embeddings import get_embeddings
 
-embeddings_service = EmbeddingsService(database=mongo_database)
+db_service = DatabaseService()
 
 
 async def run(website: str, doc_id: str):
@@ -24,6 +24,8 @@ async def run(website: str, doc_id: str):
     print("creating and saving embeddings")
     # Can we parallelize this?
     for doc in chunks:
-        embeddings_service.insert_embedding(document_id=doc_id,
-                                            content=doc.page_content)
+        emb = get_embeddings(doc.page_content)
+        db_service.insert_embedding(document_id=doc_id,
+                                    content=doc.page_content,
+                                    embeddings=emb)
     print("done!")

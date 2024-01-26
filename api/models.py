@@ -9,3 +9,9 @@ class CreateNamespaceRequest(BaseModel):
 class CreateDatasourceRequest(BaseModel):
     namespace_id: str
     website: str
+
+
+class NamespaceViewModel(BaseModel):
+    id: str
+    title: str
+    description: str
