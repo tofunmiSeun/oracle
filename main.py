@@ -4,7 +4,7 @@ import api.models
 from database.service import DatabaseService
 import asyncio
 import datasource_processer
-from embeddings import generate_embeddings
+from embeddings import embed_query
 
 app = FastAPI()
 db_service = DatabaseService()
@@ -46,5 +46,5 @@ def create_datasource(body: api.models.CreateDatasourceRequest) -> str:
 @app.get("/query/{namespace_id}")
 def query_data(namespace_id: str, query: str = '') -> List[str]:
     doc_ids = db_service.get_document_ids_for_namespace(namespace_id)
-    embeddings = generate_embeddings(query)
+    embeddings = embed_query(query)
     return db_service.search_embeddings(embeddings, doc_ids)
