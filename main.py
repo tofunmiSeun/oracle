@@ -3,7 +3,7 @@ from typing import List
 import api.models
 from database.service import DatabaseService
 import asyncio
-import curator
+import datasource_processer
 from embeddings import get_embeddings
 
 app = FastAPI()
@@ -37,8 +37,8 @@ def create_datasource(body: api.models.CreateDatasourceRequest) -> str:
                                                  body.website)
 
     datasource = db_service.get_datasource(datasource_id)
-    loop.create_task(curator.run(datasource['website'],
-                                 datasource['document_id']))
+    loop.create_task(datasource_processer.process_website(
+        datasource['website'], datasource['document_id']))
 
     return datasource_id
 
