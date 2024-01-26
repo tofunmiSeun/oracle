@@ -5,6 +5,7 @@ from database.service import DatabaseService
 import asyncio
 import datasource_processer
 from embeddings import embed_query
+from llm import ask_llm
 
 app = FastAPI()
 db_service = DatabaseService()
@@ -43,8 +44,9 @@ def create_datasource(body: api.models.CreateDatasourceRequest) -> str:
     return datasource_id
 
 
-@app.get("/query/{namespace_id}")
-def query_data(namespace_id: str, query: str = '') -> List[str]:
+@app.get("/ask/{namespace_id}")
+def ask_question(namespace_id: str, query: str = '') -> str:
     doc_ids = db_service.get_document_ids_for_namespace(namespace_id)
     embeddings = embed_query(query)
-    return db_service.search_embeddings(embeddings, doc_ids)
+    retrieved_documents = db_service.search_embeddings(embeddings, doc_ids)
+    return ask_llm(query, retrieved_documents)
