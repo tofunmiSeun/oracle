@@ -1,14 +1,13 @@
 from fastapi import FastAPI
 from typing import List
 import api.models
-from database.service import DatabaseService
+from database import db_service
 import threading
 import datasource_processer
 from embeddings import embed_query
 from llm import ask_llm
 
 app = FastAPI()
-db_service = DatabaseService()
 
 
 @app.post("/namespace")

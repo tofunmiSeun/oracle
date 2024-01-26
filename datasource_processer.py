@@ -2,10 +2,9 @@ from langchain_community.document_loaders import WebBaseLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 from typing import List
-from database.service import DatabaseService
+from database import db_service
 from embeddings import embed_documents
 
-db_service = DatabaseService()
 # Is a different kind of text splitter better?
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=2000)
 

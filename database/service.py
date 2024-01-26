@@ -1,8 +1,8 @@
 from typing import List, Optional
 from pymongo.collection import Collection
+from pymongo.database import Database
 from bson import ObjectId
 from .models import Namespace, Datasource, DocumentEmbeddings
-from .client import mongo_database
 
 
 def get_unique_document_id(website_url: str) -> str:
@@ -10,8 +10,7 @@ def get_unique_document_id(website_url: str) -> str:
 
 
 class DatabaseService:
-    def __init__(self) -> None:
-        database = mongo_database
+    def __init__(self, database: Database) -> None:
         self.namespace_collection: Collection[Namespace] = database[
             'namespace']
         self.datasource_collection: Collection[Datasource] = database[
