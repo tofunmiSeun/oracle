@@ -1,10 +1,10 @@
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class CreateNamespaceRequest(BaseModel):
-    title: str
-    description: str
+    title: str = Field(min_length=3)
+    description: Optional[str]
 
 
 class CreateDatasourceRequest(BaseModel):
