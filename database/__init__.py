@@ -1,11 +1,9 @@
 import pymongo
-import os
-from dotenv import load_dotenv
+import loaded_env_variables
 from database.service import DatabaseService
 
-load_dotenv()
 
-uri = os.getenv('MONGODB_URI')
+uri = loaded_env_variables.MONGODB_URI
 # Todo: fix TLS certificate validation
 mongo_client = pymongo.MongoClient(uri, tlsAllowInvalidCertificates=True)
 

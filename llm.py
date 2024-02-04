@@ -2,13 +2,10 @@ from langchain_community.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain
-import os
-from dotenv import load_dotenv
+import loaded_env_variables
 from langchain_core.runnables import RunnableLambda
 from langchain_core.documents import Document
 from typing import List
-
-load_dotenv()
 
 prompt_template = """
 You are a helpful assistant.
@@ -22,7 +19,7 @@ Be very succint and only list answers in bullet points.
 Question: {input}
 """
 
-llm = ChatOpenAI(openai_api_key=os.getenv('OPENAI_API_KEY'))
+llm = ChatOpenAI(openai_api_key=loaded_env_variables.OPENAI_API_KEY)
 prompt = ChatPromptTemplate.from_template(prompt_template)
 
 

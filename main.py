@@ -7,12 +7,13 @@ import threading
 import datasource_processer
 from embeddings import embed_query
 from llm import ask_llm
+import loaded_env_variables
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4500"],
+    allow_origins=[loaded_env_variables.FRONTEND_URL],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
