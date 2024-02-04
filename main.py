@@ -11,13 +11,15 @@ import loaded_env_variables
 
 app = FastAPI()
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[loaded_env_variables.FRONTEND_URL],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+frontend_url = loaded_env_variables.FRONTEND_URL
+if frontend_url is not None:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[loaded_env_variables.FRONTEND_URL],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 
 @app.post("/namespace")
