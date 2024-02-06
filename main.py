@@ -33,7 +33,9 @@ def get_all_workspaces() -> List[api.models.WorkspaceViewModel]:
     workspaces = db_service.get_all_workspaces()
     return [
         api.models.WorkspaceViewModel(
-            id=str(item["_id"]), title=item["title"], description=item["description"]
+            id=str(item["_id"]),
+            title=item["title"],
+            description=item["description"]
         )
         for item in workspaces
     ]
@@ -61,7 +63,8 @@ def delete_workspace(workspace_id: str) -> None:
 
 @app.post("/datasource")
 def create_datasource(body: api.models.CreateDatasourceRequest) -> str:
-    datasource_id = db_service.create_datasource(body.workspace_id, body.website)
+    datasource_id = db_service.create_datasource(
+        body.workspace_id, body.website)
 
     datasource = db_service.get_datasource(datasource_id)
 
@@ -95,10 +98,37 @@ def delete_datasource(datasource_id: str) -> None:
     db_service.delete_datasource(id=datasource_id)
 
 
-@app.get("/ask/{workspace_id}")
-def ask_question(workspace_id: str, query: str = "") -> str:
+@app.post("/chat-messages/ask-ai/{workspace_id}")
+def ask_question(workspace_id: str, body: api.models.QueryAIRequest) -> str:
+    query = body.query
+
+    # save in db and get id
+    human_chat_message_id = db_service.save_chat_message(
+        workspace_id, "human", query)
+
     doc_ids = db_service.get_document_ids_for_workspace(workspace_id)
     embeddings = embed_query(query)
     retrieved_documents = db_service.search_embeddings(embeddings, doc_ids)
 
-    return ask_llm(query, retrieved_documents)
+    ai_response = ask_llm(query, retrieved_documents)
+
+    db_service.save_chat_message(workspace_id, "AI",
+                                 ai_response,
+                                 human_chat_message_id)
+
+    return ai_response
+
+
+@app.get("/chat-messages/{workspace_id}")
+def get_chat_messages(
+        workspace_id: str) -> List[api.models.ChatMessageViewModel]:
+    messages = db_service.get_chat_messages(workspace_id)
+    return [
+        api.models.ChatMessageViewModel(
+            id=str(item["_id"]),
+            created_at=item["created_at"],
+            message=item["message"],
+            sender=item['sender']
+        )
+        for item in messages
+    ]

@@ -1,4 +1,4 @@
-from typing import TypedDict, NotRequired, List
+from typing import TypedDict, NotRequired, List, Literal
 from bson import ObjectId
 
 
@@ -20,3 +20,12 @@ class DocumentEmbeddings(TypedDict):
     document_id: str
     content: str
     embeddings: List[float]
+
+
+class ChatMessage(TypedDict):
+    _id: NotRequired[ObjectId]
+    workspace_id: str
+    created_at: float
+    sender: Literal['human', 'AI']
+    message: str
+    thread_id: NotRequired[str]

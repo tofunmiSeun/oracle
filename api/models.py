@@ -27,3 +27,14 @@ class DatasourceViewModel(BaseModel):
 class UpdateWorkspaceRequest(BaseModel):
     title: Optional[str]
     description: Optional[str]
+
+
+class QueryAIRequest(BaseModel):
+    query: str = Field(min_length=3)
+
+
+class ChatMessageViewModel(BaseModel):
+    id: str
+    created_at: float
+    message: str
+    sender: str

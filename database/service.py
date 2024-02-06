@@ -1,8 +1,9 @@
-from typing import List, Optional
+from typing import List, Optional, Literal
 from pymongo.collection import Collection
 from pymongo.database import Database
 from bson import ObjectId
-from .models import Workspace, Datasource, DocumentEmbeddings
+from .models import Workspace, Datasource, DocumentEmbeddings, ChatMessage
+import time
 
 
 def get_unique_document_id(website_url: str) -> str:
@@ -15,6 +16,9 @@ class DatabaseService:
         self.datasource_collection: Collection[Datasource] = database["datasource"]
         self.embeddings_collection: Collection[DocumentEmbeddings] = database[
             "document_embeddings"
+        ]
+        self.chat_messages_collection: Collection[ChatMessage] = database[
+            "chat_messages"
         ]
 
     def create_workspace(self, title: str, description: str) -> str:
@@ -89,6 +93,32 @@ class DatabaseService:
 
     def get_datasource(self, id) -> Datasource:
         return self.datasource_collection.find_one({"_id": ObjectId(id)})
+
+    def save_chat_message(
+        self, workspace_id: str, sender: Literal["human", "AI"],
+        message: str,
+        thread_id: str = None
+    ) -> str:
+        chat_message = ChatMessage(
+            workspace_id=workspace_id,
+            created_at=time.time(),
+            sender=sender,
+            message=message,
+            thread_id=thread_id
+        )
+        result = self.chat_messages_collection.insert_one(chat_message)
+        return str(result.inserted_id)
+
+    def get_chat_messages(self, workspace_id: str) -> List[ChatMessage]:
+        result: List[ChatMessage] = []
+
+        cursor = self.chat_messages_collection.find(
+            {"workspace_id": workspace_id}).sort("created_at", -1)
+
+        for item in cursor:
+            result.append(item)
+
+        return result
 
     def get_document_ids_for_workspace(self, workspace_id: str) -> List[str]:
         cursor = self.datasource_collection.find(
