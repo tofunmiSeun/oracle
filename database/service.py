@@ -2,71 +2,82 @@ from typing import List, Optional
 from pymongo.collection import Collection
 from pymongo.database import Database
 from bson import ObjectId
-from .models import Namespace, Datasource, DocumentEmbeddings
+from .models import Workspace, Datasource, DocumentEmbeddings
 
 
 def get_unique_document_id(website_url: str) -> str:
-    return f'website_{website_url.strip().lower()}'
+    return f"website_{website_url.strip().lower()}"
 
 
 class DatabaseService:
     def __init__(self, database: Database) -> None:
-        self.namespace_collection: Collection[Namespace] = database[
-            'namespace']
-        self.datasource_collection: Collection[Datasource] = database[
-            'datasource']
+        self.workspace_collection: Collection[Workspace] = database["namespace"]
+        self.datasource_collection: Collection[Datasource] = database["datasource"]
         self.embeddings_collection: Collection[DocumentEmbeddings] = database[
-            'document_embeddings']
+            "document_embeddings"
+        ]
 
-    def create_namespace(self, title: str, description: str) -> str:
-        namespace = Namespace(title=title, description=description)
-        result = self.namespace_collection.insert_one(namespace)
+    def create_workspace(self, title: str, description: str) -> str:
+        workspace = Workspace(title=title, description=description)
+        result = self.workspace_collection.insert_one(workspace)
         return str(result.inserted_id)
 
-    def get_all_namespaces(self) -> List[Namespace]:
-        result: List[Namespace] = []
+    def get_all_workspaces(self) -> List[Workspace]:
+        result: List[Workspace] = []
 
-        cursor = self.namespace_collection.find({})
+        cursor = self.workspace_collection.find({})
         for item in cursor:
             result.append(item)
 
         return result
 
-    def update_namespace(self, id: str, title: Optional[str] = None,
-                         description: Optional[str] = None) -> None:
+    def get_workspace(self, id: str) -> Workspace:
+        workspace = self.workspace_collection.find_one({"_id": ObjectId(id)})
+
+        if workspace is None:
+            raise RuntimeError("Could not find workspace for given id")
+
+        return workspace
+
+    def update_workspace(
+        self, id: str, title: Optional[str] = None, description: Optional[str] = None
+    ) -> None:
         if title is None and description is None:
             return
 
-        namespace = self.namespace_collection.find_one({"_id": ObjectId(id)})
-        if namespace is None:
+        workspace = self.workspace_collection.find_one({"_id": ObjectId(id)})
+        if workspace is None:
             return
 
         update_params: dict[str, str] = {}
         if title is not None:
-            update_params['title'] = title
+            update_params["title"] = title
         if description is not None:
-            update_params['description'] = description
+            update_params["description"] = description
 
-        self.namespace_collection.update_one({"_id": namespace["_id"]},
-                                             {"$set": update_params})
+        self.workspace_collection.update_one(
+            {"_id": workspace["_id"]}, {"$set": update_params}
+        )
 
-    def delete_namespace(self, id: str) -> bool:
-        result = self.namespace_collection.delete_one({"_id": ObjectId(id)})
+    def delete_workspace(self, id: str) -> bool:
+        result = self.workspace_collection.delete_one({"_id": ObjectId(id)})
         return result.deleted_count > 0
 
-    def create_datasource(self, namespace_id: str, website: str) -> str:
+    def create_datasource(self, workspace_id: str, website: str) -> str:
         doc_id = get_unique_document_id(website)
-        datasource = Datasource(namespace_id=namespace_id, document_id=doc_id,
-                                website=website,
-                                data_analysed=False)
+        datasource = Datasource(
+            namespace_id=workspace_id,
+            document_id=doc_id,
+            website=website,
+            data_analysed=False,
+        )
         result = self.datasource_collection.insert_one(datasource)
         return str(result.inserted_id)
 
-    def get_datasources(self, namespace_id: str) -> List[Datasource]:
+    def get_datasources(self, workspace_id: str) -> List[Datasource]:
         result: List[Datasource] = []
 
-        cursor = self.datasource_collection.find(
-            {"namespace_id": namespace_id})
+        cursor = self.datasource_collection.find({"namespace_id": workspace_id})
         for item in cursor:
             result.append(item)
 
@@ -79,45 +90,47 @@ class DatabaseService:
     def get_datasource(self, id) -> Datasource:
         return self.datasource_collection.find_one({"_id": ObjectId(id)})
 
-    def get_document_ids_for_namespace(self, namespace_id: str) -> List[str]:
+    def get_document_ids_for_workspace(self, workspace_id: str) -> List[str]:
         cursor = self.datasource_collection.find(
-            {"namespace_id": namespace_id},
-            {"document_id": 1})
+            {"namespace_id": workspace_id}, {"document_id": 1}
+        )
 
         doc_ids: List[str] = []
         for item in cursor:
-            doc_ids.append(item['document_id'])
+            doc_ids.append(item["document_id"])
 
         return doc_ids
 
-    def insert_embeddings(self, document_id: str, content: str,
-                          embeddings: List[float]) -> None:
-        document_embeddings = DocumentEmbeddings(document_id=document_id,
-                                                 content=content,
-                                                 embeddings=embeddings)
+    def insert_embeddings(
+        self, document_id: str, content: str, embeddings: List[float]
+    ) -> None:
+        document_embeddings = DocumentEmbeddings(
+            document_id=document_id, content=content, embeddings=embeddings
+        )
         self.embeddings_collection.insert_one(document_embeddings)
 
-    def search_embeddings(self, embeddings: List[float],
-                          document_ids: List[str]) -> List[str]:
+    def search_embeddings(
+        self, embeddings: List[float], document_ids: List[str]
+    ) -> List[str]:
 
-        cursor = self.embeddings_collection.aggregate([
-            {
-                "$vectorSearch": {
-                    "queryVector": embeddings,
-                    "path": "embeddings",
-                    "numCandidates": 100,
-                    "limit": 3,
-                    "index": "embeddings_vector_idx",
-                    "filter": {"document_id": {"$in": document_ids}}
-                }
-            },
-            {
-                "$project": {"_id": 0, "content": 1}
-            }
-        ])
+        cursor = self.embeddings_collection.aggregate(
+            [
+                {
+                    "$vectorSearch": {
+                        "queryVector": embeddings,
+                        "path": "embeddings",
+                        "numCandidates": 100,
+                        "limit": 3,
+                        "index": "embeddings_vector_idx",
+                        "filter": {"document_id": {"$in": document_ids}},
+                    }
+                },
+                {"$project": {"_id": 0, "content": 1}},
+            ]
+        )
 
         results: List[str] = []
         for item in cursor:
-            results.append(item['content'])
+            results.append(item["content"])
 
         return results

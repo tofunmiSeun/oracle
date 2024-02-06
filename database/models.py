@@ -2,7 +2,7 @@ from typing import TypedDict, NotRequired, List
 from bson import ObjectId
 
 
-class Namespace(TypedDict):
+class Workspace(TypedDict):
     _id: NotRequired[ObjectId]
     title: str
     description: str

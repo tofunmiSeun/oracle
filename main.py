@@ -22,53 +22,72 @@ if frontend_url is not None:
     )
 
 
-@app.post("/namespace")
-def create_namespace(body: api.models.CreateNamespaceRequest) -> str:
-    namespace_id = db_service.create_namespace(body.title, body.description)
-    return namespace_id
+@app.post("/workspace")
+def create_workspace(body: api.models.CreateWorkspaceRequest) -> str:
+    workspace_id = db_service.create_workspace(body.title, body.description)
+    return workspace_id
 
 
-@app.get("/namespace")
-def get_all_namespaces() -> List[api.models.NamespaceViewModel]:
-    namespaces = db_service.get_all_namespaces()
-    return [api.models.NamespaceViewModel(id=str(item['_id']),
-                                          title=item['title'],
-                                          description=item['description'])
-            for item in namespaces]
+@app.get("/workspace")
+def get_all_workspaces() -> List[api.models.WorkspaceViewModel]:
+    workspaces = db_service.get_all_workspaces()
+    return [
+        api.models.WorkspaceViewModel(
+            id=str(item["_id"]), title=item["title"], description=item["description"]
+        )
+        for item in workspaces
+    ]
 
 
-@app.post("/namespace/{id}")
-def update_namespace(id: str, body: api.models.UpdateNamespaceRequest) -> None:
-    db_service.update_namespace(id, body.title, body.description)
+@app.get("/workspace/{id}")
+def get_workspace(id: str) -> api.models.WorkspaceViewModel:
+    workspace = db_service.get_workspace(id)
+    return api.models.WorkspaceViewModel(
+        id=str(workspace["_id"]),
+        title=workspace["title"],
+        description=workspace["description"],
+    )
 
 
-@app.delete("/namespace/{namespace_id}")
-def delete_namespace(namespace_id: str) -> None:
-    db_service.delete_namespace(id=namespace_id)
+@app.post("/workspace/{id}")
+def update_workspace(id: str, body: api.models.UpdateWorkspaceRequest) -> None:
+    db_service.update_workspace(id, body.title, body.description)
+
+
+@app.delete("/workspace/{workspace_id}")
+def delete_workspace(workspace_id: str) -> None:
+    db_service.delete_workspace(id=workspace_id)
 
 
 @app.post("/datasource")
 def create_datasource(body: api.models.CreateDatasourceRequest) -> str:
-    datasource_id = db_service.create_datasource(body.namespace_id,
-                                                 body.website)
+    datasource_id = db_service.create_datasource(body.workspace_id, body.website)
 
     datasource = db_service.get_datasource(datasource_id)
 
-    thread = threading.Thread(target=datasource_processer.process_website,
-                              args=(datasource['website'],
-                                    datasource['document_id'],))
+    thread = threading.Thread(
+        target=datasource_processer.process_website,
+        args=(
+            datasource["website"],
+            datasource["document_id"],
+        ),
+    )
     thread.start()
 
     return datasource_id
 
 
-@app.get("/datasource/{namespace_id}")
-def get_datasources(namespace_id: str) -> List[api.models.DatasourceViewModel]:
-    namespaces = db_service.get_datasources(namespace_id)
-    return [api.models.DatasourceViewModel(id=str(item['_id']),
-                                           namespace_id=item['namespace_id'],
-                                           website=item['website'])
-            for item in namespaces]
+@app.get("/datasource/{workspace_id}")
+def get_datasources(workspace_id: str) -> List[api.models.DatasourceViewModel]:
+    workspaces = db_service.get_datasources(workspace_id)
+    return [
+        api.models.DatasourceViewModel(
+            id=str(item["_id"]),
+            workspace_id=item["namespace_id"],
+            website=item["website"],
+        )
+        for item in workspaces
+    ]
 
 
 @app.delete("/datasource/{datasource_id}")
@@ -76,9 +95,9 @@ def delete_datasource(datasource_id: str) -> None:
     db_service.delete_datasource(id=datasource_id)
 
 
-@app.get("/ask/{namespace_id}")
-def ask_question(namespace_id: str, query: str = '') -> str:
-    doc_ids = db_service.get_document_ids_for_namespace(namespace_id)
+@app.get("/ask/{workspace_id}")
+def ask_question(workspace_id: str, query: str = "") -> str:
+    doc_ids = db_service.get_document_ids_for_workspace(workspace_id)
     embeddings = embed_query(query)
     retrieved_documents = db_service.search_embeddings(embeddings, doc_ids)
 
