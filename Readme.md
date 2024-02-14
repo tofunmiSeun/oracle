@@ -1,6 +1,6 @@
 ### Launching app
-1. Create a `.env` file in the root folder of the application and provide the required environmental variables as listed in `loaded_env_variables.py`
-2. Install required packages using `pip install -r requirements.txt`
+1. Install required packages using `pip install -r requirements.txt`
+2. Create a `.env` file in the root folder of the application and provide the required environmental variables as listed in `loaded_env_variables.py`
 3. Run `uvicorn main:app --reload --port=3444`
 
 ### Installing new packages
