@@ -102,7 +102,6 @@ def delete_datasource(datasource_id: str) -> None:
 def ask_question(workspace_id: str, body: api.models.QueryAIRequest) -> str:
     query = body.query
 
-    # save in db and get id
     human_chat_message_id = db_service.save_chat_message(
         workspace_id, "human", query)
 
